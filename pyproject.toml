@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "docassemble.MassHealthFairHearingRequestForm"
 version = "1.0"
-description = "Mass Health Fair Hearing Request Form"
+description = "A Docassemble Interview for a Mass Health Fair Hearing Request Form"
 readme = "README.md"
 authors = [
     { name = "Elisabeth Clagett", email = "elisabeth.clagett@su.suffolk.edu" },

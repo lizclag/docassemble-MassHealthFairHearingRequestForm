@@ -45,7 +45,7 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
 
 setup(name='docassemble.MassHealthFairHearingRequestForm',
       version='1.0',
-      description=('Mass Health Fair Hearing Request Form'),
+      description=('A Docassemble Interview for a Mass Health Fair Hearing Request Form'),
       long_description='# docassemble.MassHealthFairHearingRequestFo\r\n\r\nMass Health Fair Hearing Request Form\r\n\r\n## Author\r\n\r\nElisabeth Clagett\r\n\r\n',
       long_description_content_type='text/markdown',
       author='Elisabeth Clagett',
