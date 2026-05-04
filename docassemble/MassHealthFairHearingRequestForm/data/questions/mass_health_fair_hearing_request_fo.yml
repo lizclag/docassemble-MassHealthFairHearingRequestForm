@@ -1,0 +1,1211 @@
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+  - docassemble.ALMassachusetts:al_massachusetts.yml
+  - docassemble.ALToolbox:phone-number-validation.yml
+  - docassemble.MassAccess:massaccess.yml
+---
+metadata:
+  title: >-
+    MassHealth Fair Hearing Request Form to appeal a MassHealth Decision
+  short title: >-
+    MassHealth Appeal
+  description: |-
+    If you disagree with a decision made by MassHealth about your coverage, benefits, or eligibility, this interview can help you request a Fair Hearing.
+
+    You can use this interview to appeal decisions such as a denial of MassHealth coverage, a determination that you are not eligible, or a reduction or termination of benefits. For example, you may use this form if MassHealth stops covering a medication or service that your provider says you still need.
+
+    After you submit your hearing request, the Office of Medicaid, Board of Hearings will review your request and schedule a hearing. At the hearing, you will have the opportunity to explain why you disagree with MassHealth’s decision and provide any supporting information.
+    
+  can_I_use_this_form: |
+    You can use this interview if you want to appeal a decision made by MassHealth.
+
+    You may request a hearing if:
+      • You disagree with a decision about your eligibility, benefits, or coverage, or  
+      • MassHealth did not act on your application or request within a reasonable time.
+
+    This hearing gives you the opportunity to explain why you think MassHealth’s decision is wrong.
+
+    You can file this request for yourself, or you may file on someone else’s behalf if you are authorized to do so (for example, as a legal representative, guardian, or someone with power of attorney).
+
+    You must request a hearing within 60 days of receiving a notice of MassHealth’s decision. In some situations, if you did not receive a notice or MassHealth did not act, you may have up to 120 days to request a hearing.
+    
+  before_you_start: |
+    This interview will guide you through completing a MassHealth Fair Hearing request form.
+
+    Before you begin, you should have:
+
+     1. Your MassHealth Member ID number (if you or the person you are filing for has one)
+   
+     2. The notice from MassHealth about the decision you are appealing
+   
+     3. Any documents that support your appeal (if readily available)
+
+    You will have an opportunity to upload documents during this interview. You may also submit documents after you file your hearing request by emailing them to <u>BOH-FairHearingsubmissions@MassMail.State.MA.US</u> before your hearing.
+  
+  maturity: production
+  estimated_completion_minutes: 10
+  estimated_completion_delta: 5
+  LIST_topics: 
+    - "HE-00-00-00-00"
+  tags:
+    - "HE-00-00-00-00"
+  authors:
+    - Elisabeth Clagett
+  original_form: []
+  original_form_published_on: 2025-01-01
+  help_page_url: >-
+    https://www.mass.gov/how-to/how-to-appeal-a-masshealth-decision
+  help_page_title: >-
+    How to appeal a MassHealth decision
+  allowed_courts: []
+  typical_role: "plaintiff"
+  al_weaver_version: "1.11.0"
+  generated_on: "2026-01-21"
+  languages:
+    - en
+  jurisdiction: NAM-US-US+MA
+  review_date: 2026-01-21
+  form_titles:
+    - Mass Health Fair Hearing Request Form
+  form_numbers: []
+  update_notes: |
+---
+code: |
+  # This controls the default country and list of states in address field questions
+  AL_DEFAULT_COUNTRY = "US"
+---
+code: |
+  # This controls the default state in address field questions
+  AL_DEFAULT_STATE = "MA"
+---
+code: |
+  github_repo_name =  'docassemble-MassHealthFairHearingRequestFo'
+---
+code: |
+  interview_short_title = "Request a Fair Hearing to Appeal a MassHealth Decision"
+---
+code: |
+  al_form_type = "other_form" 
+---
+objects:
+  - users: ALPeopleList.using(ask_number=True, target_number=1)
+  - filler: ALIndividual
+  - exhibit_attachment: ALExhibitDocument.using(title="Exhibits", filename="exhibits", add_page_numbers=True, include_table_of_contents=True, include_exhibit_cover_pages=True)
+
+---
+sections:
+  - getting_started: Getting Started
+  - personal_information: Personal information
+  - about_the_appeal: About the appeal
+  - supporting_documents: Supporting documents
+  - hearing_details: Hearing details
+  - additional_information: Additional information
+  - review_mass_health_fair_hearing_request_fo: Review your answers
+---
+#################### Interview order #####################
+comment: |
+  Controls order and branching logic for questions specific to this form
+id: interview_order_mass_health_fair_hearing_request_fo
+code: |
+  # Set the allowed courts for this interview
+  nav.set_section("getting_started")
+  user_role = "plaintiff"
+  user_ask_role = "plaintiff"
+  nav.set_section("personal_information")
+  al_person_answering
+  if al_person_answering != "user":
+    filler.name.first
+  set_parts(subtitle=str(users))
+  users[0].name.first
+  if al_person_answering != "user":
+    user_guardian
+    if user_guardian:
+      filler_member_id
+      has_legal_authority
+      if has_legal_authority:
+        exhibit_attachment.exhibits.has_exhibits = True
+        legal_authority_upload
+  set_progress(12)
+  users[0].address.address
+  users[0].phone_number
+  user_member_id
+  users[0].birthdate
+  nav.set_section("about_the_appeal")
+  appeal_reason_income
+  is_eligibility_appeal
+  if is_eligibility_appeal:
+    appeal_request_phr
+  set_progress(24)
+  appeal_reason_explanation
+  nav.set_section("supporting_documents")
+  if al_person_answering == "filler":
+    exhibit_attachment.exhibits.there_is_another
+    if exhibit_attachment.exhibits.there_is_another:
+        exhibit_attachment.exhibits.gather()
+  else:
+    exhibit_attachment.exhibits.has_exhibits
+    if exhibit_attachment.exhibits.has_exhibits:
+        exhibit_attachment.exhibits.gather()
+  exhibit_attachment.exhibits.there_is_another = False
+  exhibit_attachment.exhibits.there_is_another = False
+  set_progress(36)
+  if is_eligibility_appeal == False:
+    appeal_keep_benefits_request
+  nav.set_section("hearing_details")
+  hearing_type
+  hearing_in_person
+  hearing_by_phone
+  hearing_by_video
+  set_progress(48)
+  user_needs_interpreter
+  if user_needs_interpreter:
+    user_preferred_language
+  needs_assistive_device
+  nav.set_section("additional_information")
+  has_appeal_representative
+  if has_appeal_representative:
+    representative_name_full
+  set_progress(95)
+  if al_person_answering == "user":
+    users[0].signature
+  else:
+    if user_guardian:
+        filler.signature
+    else:
+        users[0].signature
+  signature_date
+  nav.set_section("review_mass_health_fair_hearing_request_fo")
+  interview_order_mass_health_fair_hearing_request_fo = True
+---
+###################### Main order ######################
+comment: |
+  This block includes the logic for standalone interviews.
+  Delete mandatory: True to include in another interview
+mandatory: True
+code: |
+  al_intro_screen
+  mass_health_fair_hearing_request_fo_intro
+  interview_order_mass_health_fair_hearing_request_fo
+  signature_date
+  # Store anonymous data for analytics / statistics
+  store_variables_snapshot(
+      persistent=True,
+      data={
+          "zip": showifdef("users[0].address.zip"),
+          "reached_interview_end": True,
+      },
+  )
+  mass_health_fair_hearing_request_fo_download
+---
+id: Mass_Health_Fair_Hearing_Request_Form
+continue button field: mass_health_fair_hearing_request_fo_intro
+question: |
+  MassHealth Fair Hearing Request
+subquestion: |
+  This interview will guide you through completing a request for a MassHealth Fair Hearing.
+
+  **Before you begin, you should have:**
+
+  1. The MassHealth Member ID number (if you or the person you are filing for has one).
+  
+  2. The notice from MassHealth about the decision you are appealing.
+  
+  3. Any documents that support your appeal (if readily available).
+
+  <div class="alert alert-info" role="alert">
+  <strong>Tip:</strong> You do not need to have every document you wish to submit before starting. You can submit documents to the hearing office after you file this form by emailing them to: <br><br> <strong> <u>BOH-FairHearingsubmissions@MassMail.State.MA.US.</u> </strong> </div>
+
+  **After you finish, you will need to:**
+
+  1. Save or print a copy of your completed form for your records.
+  
+  2. Attach a copy of the MassHealth notice you are appealing.
+  
+  3. Submit your request as soon as possible to the Office of Medicaid, Board of Hearings. You must submit it within 60 days of receiving the notice.
+
+  Most people take about 10 minutes to complete this interview.
+---
+id: who_is_answering
+question: |
+  Are you filling this form out for yourself, or for someone else?
+fields:
+  - I am filling this out for: al_person_answering
+    datatype: radio
+    choices:
+      - Myself: user
+      - Someone else: filler
+---
+id: filler_name
+question: |
+  What is your name?
+fields:
+  - First name: filler.name.first
+  - Middle (optional): filler.name.middle
+    required: False
+  - Last name: filler.name.last
+
+---
+id: filler_Mass Health Number
+question: |
+  If you have one, what is your MassHealth Member ID number?
+subquestion: |
+  You can find your Member ID on your MassHealth card or on letters from MassHealth.
+  If you cannot find it, you can call MassHealth for help at  (800) 841-2900 or check the online MassHealth account (MAP) [Login to MassHealth account (MAP)](https://login.mahix.org/oneapp/index.html#/login).
+fields:
+  - "Member ID Number": filler_member_id
+    maxlength: 12
+    required: False
+---
+id: user name
+question: |
+  % if al_person_answering == "user":
+  What is your full legal name?
+  % else:
+  Who is this form for?
+  % endif
+subquestion: |
+  % if al_person_answering == "user":
+  Enter your full legal name as it appears on MassHealth records.
+  % else:
+  Enter their full legal name as it appears on MassHealth records.
+  % endif
+fields:
+  - First name: users[0].name.first
+  - Middle (optional): users[0].name.middle
+    required: False
+  - Last name: users[0].name.last
+
+---
+code: |
+  person_name = str(users[0])
+  person_possessive = f"{person_name}'s"
+  if al_person_answering == "user":
+    person_name_or_you = "you"
+    person_possessive_or_your = "your"
+  else:
+    person_name_or_you = person_name
+    person_possessive_or_your = person_possessive
+---
+id: filler is user guardian
+question: |
+  Are you the parent or legal guardian of the person you are filling this form out for?
+fields:
+  - no label: user_guardian
+    datatype: yesnoradio
+
+---
+id: legal decision making documents
+if: |
+  al_person_answering != "user"
+question: |
+   Are you legally able to make decisions for ${ users[0] }? 
+subquestion: |
+  If you are the legal guardian of ${ users[0] } or have power of attorney, please upload the legal document that allows you to submit this appeal on ${ users[0] }'s behalf.
+fields:
+  - "": has_legal_authority
+    datatype: yesnoradio
+---
+id: legal authority upload
+if: |
+  al_person_answering != "user"
+question: |
+  Upload proof of legal authority
+continue button field: legal_authority_upload
+fields:
+  - note: |
+      <div class="alert alert-secondary" role="alert">
+      <strong>Tip:</strong> You may upload any documentation demonstrating your legal authority to act on ${ users[0] }'s behalf, such as a power of attorney, court appointment, guardianship order, or letters of authority.
+       </div> 
+  - Document title: exhibit_attachment.exhibits[0].title
+    default: Proof of Legal Guardianship or Power of Attorney
+    maxlength: 60
+  - Upload the document: exhibit_attachment.exhibits[0].pages
+    datatype: files
+    maximum image size: 1024
+    image upload type: jpeg
+    accept: |
+      'image/png, image/jpeg, .doc, .docx, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf, .pdf'
+---
+id: user address
+question: |
+  What is ${ person_possessive_or_your } address?
+fields:
+  - Street address: users[0].address.address
+  - Apartment, suite, or unit (optional): users[0].address.unit
+    required: False
+  - City: users[0].address.city
+  - State: users[0].address.state
+  - ZIP code: users[0].address.zip
+
+---
+id: user phone number
+question: |
+  % if al_person_answering == "user":
+  What is your phone number?
+  % else:
+  What is ${ users[0] }'s phone number?
+  % endif
+fields:
+  - Phone number: users[0].phone_number
+    datatype: al_international_phone
+---
+id: What is users MassHealth Member ID number
+question: |
+  %if al_person_answering== "user":
+  If you have a MassHealth Member ID number please enter it below
+  %else:
+  If ${ users[0] } has a MassHealth Member ID number please enter it below
+  %endif
+subquestion: |
+  You can find ${ person_possessive_or_your } Member ID on their MassHealth card or on letters addressed to them from MassHealth.
+  If you cannot find it, you can call MassHealth for help at  (800) 841-2900 or check their online MassHealth account (MAP) [Login to MassHealth account (MAP)](https://login.mahix.org/oneapp/index.html#/login).
+fields:
+  - "Member ID Number": user_member_id
+    maxlength: 12
+    required: false
+---
+id: user birthdate
+question: |
+  What is ${ person_possessive_or_your } date of birth?
+fields:
+  - Date of birth: users[0].birthdate
+    datatype: date
+---
+id: appeal reasons checklist
+question: |
+  % if al_person_answering == "user":
+  Why are you appealing?
+  % else:
+  Why is ${ users[0] } appealing?
+  % endif
+subquestion: |
+  Check any reasons that apply
+fields:
+  - "income": appeal_reason_income
+    datatype: yesno
+  - "immigration": appeal_reason_immigration
+    datatype: yesno
+  - "family size": appeal_reason_family_size
+    datatype: yesno
+  - "access to other insurance": appeal_reason_other_insurance
+    datatype: yesno
+  - "residency": appeal_reason_residency
+    datatype: yesno
+  - "incarceration status": appeal_reason_incarceration
+    datatype: yesno
+  - "other": appeal_reason_other
+    datatype: yesno
+
+  - "Please choose other reason": appeal_reason_other_type
+    datatype: radio
+    choices:
+      - Medical necessity: medical_necessity
+      - Something else: something_else
+    show if: appeal_reason_other
+    required: True
+
+  - "Please describe": appeal_reason_other_text
+    datatype: area
+    rows: 1
+    show if:
+      variable: appeal_reason_other_type
+      is: something_else
+    required: True
+---
+id: eligibility appeal gate
+question: |
+  Is this appeal about ${ person_possessive_or_your } MassHealth eligibility?
+fields:
+  - no label: is_eligibility_appeal
+    datatype: yesnoradio
+---
+id: prehearing resolution option
+question: |
+  Prehearing Resolution (PHR)
+subquestion: |
+  PHR is an option for eligibility appeals only. It lets ${ person_name_or_you } try to fix the issue before a formal hearing.
+
+  If you choose PHR, MassHealth will contact ${ person_name_or_you }. In some cases, the Board of Hearings may schedule the hearing before MassHealth contacts ${ person_name_or_you }.
+
+  Some examples of eligibility issues that can be resolved through PHR are inaccurate contact information, missing documents, renewal problems, or income verification information.
+fields:
+  - "I choose Prehearing Resolution (PHR).": appeal_request_phr
+    datatype: yesno
+    required: False
+---
+id: appeal explanation and upload
+question: |
+  % if al_person_answering == "user":
+  Why are you appealing this MassHealth decision?
+  % else:
+  Why is ${ users[0] } appealing this MassHealth decision?
+  % endif 
+   
+fields:
+  - "Please explain in a few sentences" : appeal_reason_explanation
+    datatype: area
+
+help: |  
+      % if is_eligibility_appeal:
+      **Example (eligibility appeal):**  
+      “I am eligible for MassHealth. I sent the documents to MassHealth to prove this. I sent [document name] on [date] and [tell MassHealth the ways you tried to get them this information (i.e. signed releases, the people I spoke with over the phone told me what to send and I sent it by mail, delivered in person, email, fax, etc.)] Please review my eligibility and the information I provided.”
+      
+      <div class="alert alert-secondary" role="alert">
+      <strong>Tip:</strong> If MassHealth says you are not eligible because they are missing proof of something (for example: income, incarceration status, or immigration status), and you have that document, you can upload it on the next screen.
+      </div> 
+      % else:
+      **Example (medical necessity appeal):**  
+      “MassHealth denied [service/equipment/treatment], but I need it for my  health. My [doctor/therapist/social worker] says it is medically necessary. Their name is [name], they work at [clinic/hospital], and their phone number is [phone]. This service helps me because [1–2 sentences about symptoms/limits and what the service will do].”
+      
+       <div class="alert alert-secondary" role="alert">
+      <strong>Tip:</strong> If MassHealth says you are no longer covered because they are missing proof of something (for example: a letter from your provider, income, incarceration status, or immigration status), and you have that document, you can upload it on the next screen.
+      </div> 
+      % endif
+---
+generic object: ALExhibitList
+id: another exhibit
+if: |
+  al_person_answering == "filler"
+question: |
+  Do you have any documents to upload in support of ${ person_possessive } appeal?
+subquestion: |
+  You have uploaded ${ x.number_gathered() } document(s) so far as Proof of Legal Authority of ${ users[0] }. You can upload multiple documents. 
+  
+  % if hasattr(x, 'maximum_size'):
+  The total size of all exhibits must be less than ${ humanize.naturalsize(x.maximum_size) }.
+  You can upload ${ humanize.naturalsize(x.maximum_size - x.size_in_bytes())} more.
+  % endif
+
+  ${ collapse_template(x.in_progress_exhibits) }
+field: x.there_is_another
+buttons:
+  - Finished adding documents: False
+  - Add another document: True
+help: |  
+     % if is_eligibility_appeal:
+      **Tip:** If MassHealth says you are not eligible because they are missing a document (for example, proof of income, incarceration status, or immigration status), you can upload that document here.
+
+      If you upload the missing document and choose **Pre-hearing Resolution**, MassHealth may be able to fix the problem without a hearing.
+  
+      % else:
+      An example of a supporting document is a letter from a medical professional or doctor to support the reason of medical necessity.
+      <div class="alert alert-info" role="alert">
+        <strong>Tip:</strong> If you do not have these documents ready now, you can still complete and file this form. You can send documents to the hearing office later, as long as they are submitted before your hearing. <strong>Email: BOH-FairHearingsubmissions@MassMail.State.MA.US</strong>
+      </div>
+      % endif 
+---
+generic object: ALExhibitList
+id: any exhibits
+if: |
+  al_person_answering == "user"
+question: |
+  Do you have any documents to attach to this form? 
+fields:
+  - "Do you have any documents you want to upload?": x.has_exhibits
+    datatype: yesnoradio
+  - note: |
+     % if is_eligibility_appeal:
+      **Tip:** If MassHealth says you are not eligible because they are missing a document (for example, proof of income, incarceration status, or immigration status), you can upload that document here.
+
+      If you upload the missing document and choose **Pre-hearing Resolution**, MassHealth may be able to fix the problem without a hearing.
+  
+      % else:
+      <div class="alert alert-info" role="alert">
+        <strong>Tip:</strong> If you do not have these documents ready now, you can still complete and file this form. You can send documents to the hearing office later, as long as they are submitted before your hearing. <strong>Email: BOH-FairHearingsubmissions@MassMail.State.MA.US</strong>
+      </div>
+      % endif
+  - note: |
+      You can upload multiple documents. 
+      An example of a supporting document is a letter from a medical professional or doctor to support the reason of medical necessity. 
+    show if: x.has_exhibits
+  - First document title: x[0].title
+    maxlength: 60
+    show if: x.has_exhibits
+  - Upload the first document: x[0].pages
+    show if: x.has_exhibits
+    datatype: files
+    maximum image size: 1024
+    image upload type: jpeg
+    accept: |
+      'image/png, image/jpeg, .doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf,.pdf' 
+---
+id: benefits during appeal choice
+if: |
+  is_eligibility_appeal == False
+question: |
+  % if al_person_answering == "user":
+  While your appeal is being reviewed, what do you want to happen with your benefits?
+  % else:
+  While the appeal is being reviewed, what does ${ users[0] } want to happen with their benefits?
+  % endif
+subquestion: |
+  *Choose one option below*
+  
+  **Important Note:**
+  
+  - If you choose **"Keep my benefits the same during my appeal"** and lose the appeal, you may have to pay back the cost of the benefits received during the appeal.
+  
+  - If you choose **"Accept the change to my benefits during my appeal"** and win the appeal, MassHealth will return your benefits to the original amount going forward.
+
+fields:
+  - no label: appeal_benefits_choice
+    datatype: radio
+    choices:
+      - Keep my benefits the same during my appeal.: keep
+      - Accept the change to my benefits during my appeal.: accept
+   
+---
+code: |
+  if is_eligibility_appeal == False:
+    appeal_keep_benefits_request = (appeal_benefits_choice == "keep")
+    appeal_accept_change = (appeal_benefits_choice == "accept")
+---
+---
+id: Type of Hearing
+question: |
+  Type of hearing
+subquestion: |
+  I want the hearing to be held in one of the following ways:
+fields:
+  - no label: hearing_type
+    datatype: radio
+    choices:
+      - In person: in_person
+      - By phone: phone
+      - By video: video
+  - Hearing location preference: inperson_location
+    datatype: dropdown
+    choices:
+      - Charlestown
+      - Chelsea
+      - Springfield
+      - Taunton
+      - Tewksbury
+      - Quincy
+      - Worcester
+      - No location preference
+    show if:
+      variable: hearing_type
+      is: in_person
+    required: True
+
+  - note: |
+      <div class="alert alert-secondary" role="alert">
+      You selected in person hearing at <strong>Charlestown</strong>, make sure you are able to travel to <strong>529 Main Street, Charlestown, MA 02129</strong> on the date of your hearing.
+      </div>
+    show if:
+      variable: inperson_location
+      is: Charlestown
+
+  - note: |
+      <div class="alert alert-secondary" role="alert">
+      You selected in person hearing at <strong>Chelsea</strong>, make sure you are able to travel to <strong>45 Spruce Street, Chelsea, MA 02150</strong> on the date of your hearing.
+      </div>
+    show if:
+      variable: inperson_location
+      is: Chelsea
+
+  - note: |
+      <div class="alert alert-secondary" role="alert">
+      You selected in person hearing at <strong>Springfield</strong>, make sure you are able to travel to <strong>243 Cottage Street, Springfield, MA 01104</strong> on the date of your hearing.
+      </div>
+    show if:
+      variable: inperson_location
+      is: Springfield
+
+  - note: |
+      <div class="alert alert-secondary" role="alert">
+      You selected in person hearing at <strong>Taunton</strong>, make sure you are able to travel to <strong>21 Spring Street, Suite 4, Taunton, MA 02780</strong> on the date of your hearing.
+      </div>
+    show if:
+      variable: inperson_location
+      is: Taunton
+
+  - note: |
+      <div class="alert alert-secondary" role="alert">
+      You selected in person hearing at <strong>Tewksbury</strong>, make sure you are able to travel to <strong>367 East Street, Tewksbury, MA 01876</strong> on the date of your hearing.
+      </div>
+    show if:
+      variable: inperson_location
+      is: Tewksbury
+
+  - note: |
+      <div class="alert alert-secondary" role="alert">
+      You selected in person hearing at <strong>Quincy</strong>, make sure you are able to travel to <strong>100 Hancock Street, Floor 6, Quincy, MA 02171</strong> on the date of your hearing.
+      </div>
+    show if:
+      variable: inperson_location
+      is: Quincy
+
+  - note: |
+      <div class="alert alert-secondary" role="alert">
+      You selected in person hearing at <strong>Worcester</strong>, make sure you are able to travel to <strong>50 SW Cutoff, Suite 1A, Worcester, MA 01604</strong> on the date of your hearing.
+      </div>
+    show if:
+      variable: inperson_location
+      is: Worcester
+
+  - note: |
+      <div class="alert alert-secondary" role="alert">
+      You did not select a location preference for your <strong>in person</strong> hearing. The Board of Hearings will choose the hearing location for you.
+      </div>
+    show if:
+      variable: inperson_location
+      is: No location preference
+
+  - What phone number should be used for the hearing?: hearing_phone_number
+    datatype: al_international_phone
+    show if:
+      variable: hearing_type
+      is: phone
+    required: True
+  - note: |
+      <div class="alert alert-secondary" role="alert">
+      If you select <strong>by phone</strong>, make sure you have reliable phone service at the time of your hearing.
+      </div>
+    show if:
+      variable: hearing_type
+      is: phone
+      
+  - What email should be used for the video hearing?: hearing_email
+    datatype: email
+    maxlength: 40
+    show if:
+      variable: hearing_type
+      is: video
+    required: True
+    
+  - note: |
+      <div class="alert alert-secondary" role="alert">
+      If you select <strong>by video</strong>, make sure you have a strong internet connection and are able to access Microsoft Teams for the hearing.
+      </div>
+    show if:
+      variable: hearing_type
+      is: video
+
+---
+code: |
+  hearing_in_person = (hearing_type == "in_person")
+  hearing_by_phone = (hearing_type == "phone")
+  hearing_by_video = (hearing_type == "video")
+
+---
+id: interpreter needed
+question: |
+  % if al_person_answering == "user":
+  Do you need an interpreter for your hearing?
+  % else:
+  Does ${ users[0] } need an interpreter for their hearing?
+  % endif
+subquestion:
+  MassHealth will provide the interpreter for the hearing at no cost.
+fields:
+  - "": user_needs_interpreter
+    datatype: yesnoradio
+---
+id: preferred language
+question: |
+  What is ${ person_possessive_or_your } preferred language?
+fields:
+  - "": user_preferred_language
+    maxlength: 40
+
+---
+id: Accommodations
+question: |
+  % if al_person_answering == "user":
+   Do you need need an assistive device or any accommodations for your hearing?
+  % else:
+  Does ${ users[0] } need an assistive device or any accomodations for their hearing?
+  % endif
+subquestion: |
+  Check all that apply.
+fields:
+  - "An assistive device is needed to communicate at the hearing": needs_assistive_device
+    datatype: yesno
+
+  - "Type of assistive device needed": assistive_device_type
+    datatype: dropdown
+    choices:
+      - Wireless FM assisted listening device
+      - Neck loop for T-coil hearing aid
+      - Pocketalker amplifier
+      - CART (real-time captioning)
+      - Other: other
+    show if: needs_assistive_device
+    required: True
+
+  - "Describe the assistive device needed": assistive_device_type_other
+    datatype: area
+    rows: 1
+    show if:
+      variable: assistive_device_type
+      is: other
+    required: True
+
+  - "Another accommodation for a disability is needed": needs_other_accommodation
+    datatype: yesno
+
+  - "Describe the other accommodation needed": other_accommodation_type
+    datatype: area
+    rows: 1
+    show if: needs_other_accommodation
+    required: True
+
+---
+id: appeal representative gate
+question: |
+  % if al_person_answering == "user":
+  Do you have an appeal representative?
+  % else:
+  Does ${ users[0] } have an appeal representative?
+  % endif
+subquestion: |
+  Is a lawyer or other representative helping with the appeal?
+fields:
+  - "": has_appeal_representative
+    datatype: yesnoradio
+
+  - note: |
+      <div class="alert alert-secondary" role="alert">
+      <strong>Tip:</strong> If a lawyer or representative is working with you, you may want to talk with them about this form before you submit it.
+      </div> 
+show if: has_appeal_representative
+---
+id: appeal representative details
+question: |
+  Appeal representative information
+subquestion: |
+  Please provide ${ person_possessive_or_your } appeal representative’s contact information.
+fields:
+  - "Full name": representative_name_full
+    maxlength: 38
+  - "Phone number": representative_phone_number
+    datatype: text
+    maxlength: 17
+  - "Mailing address": representative_address_address
+    maxlength: 79
+  - "City": representative_address_city
+    maxlength: 33
+  - "State": representative_address_state
+    maxlength: 5
+  - "ZIP code": representative_address_zip
+    maxlength: 14
+depends on:
+  - has_appeal_representative
+---
+code: |
+  signature_fields = ['users[0].signature']
+---
+id: preview mass_health_fair_hearing_request_fo
+question: |
+  Preview your form before you sign it
+subquestion: |
+  Here is a preview of the form you will sign on the next page.   
+  
+  ${ al_recipient_bundle.as_pdf(key='preview') }
+
+  Click the image to open it in a new tab. Click the "Edit answers" button
+  to edit your answers.
+
+  ${ action_button_html(url_action('review_mass_health_fair_hearing_request_fo'), label='Edit answers', color='info') }
+  
+  Remember to come back to this window to continue and sign your form.
+continue button field: mass_health_fair_hearing_request_fo_preview_question    
+---
+id: mass health fair hearing request fo review screen
+event: review_mass_health_fair_hearing_request_fo
+question: |
+  Review your answers
+review:
+  - Edit: al_person_answering
+    button: |
+      **Who is filling out this form?**:
+      % if al_person_answering == "user":
+      Myself
+      % else:
+      Someone else
+      % endif
+
+  - Edit: filler.name.first
+    show if: al_person_answering != "user"
+    button: |
+      **Person filling out this form**:
+      ${ filler }
+
+  - Edit: user_guardian
+    show if: al_person_answering != "user"
+    button: |
+      **The person filling out this form is the parent or legal guardian**:
+      ${ word(yesno(user_guardian)) }
+
+  - Edit: filler_member_id
+    show if: al_person_answering != "user" and user_guardian
+    button: |
+      **filler Member ID Number**:
+      ${ filler_member_id }
+
+  - Edit: users.revisit
+    button: |
+      **Users**
+
+      % for item in users:
+        * ${ item }
+      % endfor
+
+  - Edit: user_member_id
+    button: |
+      **Member ID Number**:
+      ${ user_member_id }
+
+  - Edit: appeal_reason_income
+    button: |
+      **income**:
+      ${ word(yesno(appeal_reason_income)) }
+
+  - Edit: appeal_reason_immigration
+    button: |
+      **immigration**:
+      ${ word(yesno(appeal_reason_immigration)) }
+
+  - Edit: appeal_reason_family_size
+    button: |
+      **family size**:
+      ${ word(yesno(appeal_reason_family_size)) }
+
+  - Edit: appeal_reason_other_insurance
+    button: |
+      **access to other insurance**:
+      ${ word(yesno(appeal_reason_other_insurance)) }
+
+  - Edit: appeal_reason_residency
+    button: |
+      **residency**:
+      ${ word(yesno(appeal_reason_residency)) }
+
+  - Edit: appeal_reason_incarceration
+    button: |
+      **incarceration status**:
+      ${ word(yesno(appeal_reason_incarceration)) }
+
+  - Edit: appeal_reason_other
+    button: |
+      **other**:
+      ${ word(yesno(appeal_reason_other)) }
+
+  - Edit: is_eligibility_appeal
+    button: |
+      **This appeal is about eligibility**:
+      ${ word(yesno(is_eligibility_appeal)) }
+
+  - Edit: appeal_reason_explanation
+    button: |
+      **Why are you asking for a review? You can attach any documents that helps explain why.**:
+
+      ${ appeal_reason_explanation }
+
+  - Edit: exhibit_attachment.exhibits.has_exhibits
+    button: |
+      **I uploaded documents to support my appeal**:
+      ${ word(yesno(exhibit_attachment.exhibits.has_exhibits)) }
+
+  - Edit: appeal_keep_benefits_request
+    button: |
+      **Keep my benefits the same during my appeal. If I choose this option and lose my appeal, I may have to pay back the cost of the benefits I received during that time.**:
+      ${ word(yesno(appeal_keep_benefits_request)) }
+
+  - Edit: appeal_accept_change
+    button: |
+      **Accept the change to my benefits during my appeal. If I choose this option and win my appeal, MassHealth will return my benefits to the original amount.**:
+      ${ word(yesno(appeal_accept_change)) }
+
+  - Edit: appeal_request_phr
+    show if: is_eligibility_appeal
+    button: |
+      **I choose Prehearing Resolution (PHR) *This option is only for eligibility decisions. PHR lets you try to fix the issue before having a formal hearing. If you choose PHR, MassHealth will contact you to help resolve the problem. In some cases, the Board of Hearings may schedule a hearing before MassHealth contacts you. You can use PHR to fix eligibility issues like wrong contact information, missing documents, renewal problems, income verification questions, or an eligibility decision.**:
+      ${ word(yesno(appeal_request_phr)) }
+
+  - Edit: hearing_type
+    button: |
+      **Type of hearing**:
+      % if hearing_type == "in_person":
+      In person
+      % elif hearing_type == "phone":
+      By phone
+      % elif hearing_type == "video":
+      By video
+      % endif
+
+  - Edit: inperson_location
+    show if: hearing_type == "in_person"
+    button: |
+      **Hearing location preference**:
+      ${ inperson_location }
+
+  - Edit: hearing_phone_number
+    show if: hearing_type == "phone"
+    button: |
+      **Phone number for hearing**:
+      ${ hearing_phone_number }
+
+  - Edit: hearing_email
+    show if: hearing_type == "video"
+    button: |
+      **Email for video hearing**:
+      ${ hearing_email }
+
+  - Edit: user_needs_interpreter
+    button: |
+      **User needs interpreter**:
+      ${ word(yesno(user_needs_interpreter)) }
+
+  - Edit: user_preferred_language
+    show if: user_needs_interpreter
+    button: |
+      **User preferred language**:
+      ${ user_preferred_language }
+
+  - Edit: needs_assistive_device
+    button: |
+      **I need an assistive device to communicate at a hearing**:
+      ${ word(yesno(needs_assistive_device)) }
+
+  - Edit: assistive_device_type
+    show if: needs_assistive_device
+    button: |
+      **The type of device I need is**:
+      % if assistive_device_type == "other":
+      ${ assistive_device_type_other }
+      % else:
+      ${ assistive_device_type }
+      % endif
+
+  - Edit: needs_other_accommodation
+    button: |
+      **I need another accommodation for a disability**:
+      ${ word(yesno(needs_other_accommodation)) }
+
+  - Edit: other_accommodation_type
+    show if: needs_other_accommodation
+    button: |
+      **The type of accommodation I need is**:
+      ${ other_accommodation_type }
+
+  - Edit: has_appeal_representative
+    button: |
+      **I have someone helping me with my appeal**:
+      ${ word(yesno(has_appeal_representative)) }
+
+  - Edit: representative_name_full
+    show if: has_appeal_representative
+    button: |
+      **Do you have someone helping you with your appeal? If yes, please provide their full name.**:
+      ${ representative_name_full }
+
+  - Edit: representative_phone_number
+    show if: has_appeal_representative
+    button: |
+      **Do you have someone helping you with your appeal? If yes, please provide their phone number.**:
+      ${ representative_phone_number }
+
+  - Edit: representative_address_address
+    show if: has_appeal_representative
+    button: |
+      **Mailing Address**:
+      ${ representative_address_address }
+
+  - Edit: representative_address_city
+    show if: has_appeal_representative
+    button: |
+      **City**:
+      ${ representative_address_city }
+
+  - Edit: representative_address_state
+    show if: has_appeal_representative
+    button: |
+      **State**:
+      ${ representative_address_state }
+
+  - Edit: representative_address_zip
+    show if: has_appeal_representative
+    button: |
+      **Zip**:
+      ${ representative_address_zip }
+
+  - Edit: has_legal_authority
+    show if: has_appeal_representative
+    button: |
+      **I uploaded proof that this person can act as the appeal representative**:
+      ${ word(yesno(has_legal_authority)) }
+
+  - Edit: signature_date
+    button: |
+      **Date of signature**:
+      ${ signature_date }
+
+  - Edit: users[0].signature
+    show if: al_person_answering == "user" or not user_guardian
+    button: |
+      **signature**:
+      ${ users[0].signature }
+
+  - Edit: filler.signature
+    show if: al_person_answering != "user" and user_guardian
+    button: |
+      **signature**:
+      ${ filler.signature }
+---
+continue button field: users.revisit
+question: |
+  Edit users
+subquestion: |
+  ${ users.table }
+
+  ${ users.add_action() }
+---
+table: users.table
+rows: users
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+  - Address: |
+      row_item.address.block() if defined("row_item.address.zip") else ""
+  - Phone number: |
+      row_item.phone_number if defined("row_item.phone_number") else ""
+  - Birthdate: |
+      row_item.birthdate if defined("row_item.birthdate") else ""
+edit:
+  - name.first
+  - address.zip
+  - phone_number
+  - birthdate
+confirm: True
+
+---
+id: download mass_health_fair_hearing_request_fo
+event: mass_health_fair_hearing_request_fo_download
+question: |
+  All done
+subquestion: |
+  Thank you ${users}. Your form is ready to download and deliver.
+  
+  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
+
+  ${ action_button_html(url_action('review_mass_health_fair_hearing_request_fo'), label='Edit answers', color='info') }
+  
+  
+  ${ al_user_bundle.download_list_html() }
+  
+
+  ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
+
+progress: 100
+---
+# ALDocument objects specify the metadata for each template
+objects:
+  - mass_health_fair_hearing_request_fo_Post_interview_instructions: ALDocument.using(title="Instructions", filename="mass_health_fair_hearing_request_fo_next_steps.docx", enabled=True, has_addendum=False)
+  - mass_health_fair_hearing_request_fo_attachment: ALDocument.using(title="Mass Health Fair Hearing Request Form", filename="mass_health_fair_hearing_request_fo", enabled=True, has_addendum=False, )
+---
+# Bundles group the ALDocuments into separate downloads, such as for court and for the user
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[mass_health_fair_hearing_request_fo_Post_interview_instructions, mass_health_fair_hearing_request_fo_attachment,exhibit_attachment], filename="mass_health_fair_hearing_request_fo", title="All forms to download for your records", enabled=True)
+  - al_recipient_bundle: ALDocumentBundle.using(elements=[mass_health_fair_hearing_request_fo_attachment,exhibit_attachment],  filename="mass_health_fair_hearing_request_fo", title="All forms to file", enabled=True)
+---
+# Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
+# used for "preview" and "final" keys, and logic in the template checks the value of 
+# `i` to show or hide the user's signature
+attachment:
+  name: Post-interview-Instructions
+  filename: mass_health_fair_hearing_request_fo_next_steps
+  docx template file: mass_health_fair_hearing_request_fo_next_steps.docx
+  variable name: mass_health_fair_hearing_request_fo_Post_interview_instructions[i]
+  skip undefined: True
+  tagged pdf: True
+---
+attachment:
+  name: mass health fair hearing request fo
+  filename: mass_health_fair_hearing_request_fo
+  variable name: mass_health_fair_hearing_request_fo_attachment[i]
+  skip undefined: True
+  pdf template file: mass_health_fair_hearing_request_fo.pdf
+  editable: true
+  fields:
+      - "user_name_first": ${ users[0].name.first }
+      - "user_name_last": ${ users[0].name.last }
+      - "user_name_middle_initial": ${ users[0].name.middle_initial() }
+      - "user_address_address": ${ users[0].address.address }
+      - "user_address_city": ${ users[0].address.city }
+      - "user_address_state": ${ users[0].address.state }
+      - "user_address_zip": ${ users[0].address.zip }
+      - "user_phone_number": ${ users[0].phone_number }
+      - "user_member_id": ${ user_member_id }
+      - "filler_member_id": |
+          % if al_person_answering != "user" and user_guardian and filler_member_id:
+          (ID: ${ filler_member_id })
+          % endif
+      - "user_birthdate": ${ users[0].birthdate.format("MM/dd/yyyy") }
+      - "appeal_reason_income": ${ appeal_reason_income }
+      - "appeal_reason_immigration": ${ appeal_reason_immigration }
+      - "appeal_reason_family_size": ${ appeal_reason_family_size }
+      - "appeal_reason_other_insurance": ${ appeal_reason_other_insurance }
+      - "appeal_reason_residency": ${ appeal_reason_residency }
+      - "appeal_reason_incarceration": ${ appeal_reason_incarceration }
+      - "appeal_reason_other": ${ appeal_reason_other }
+      - "appeal_reason_other_explanation": |
+          % if appeal_reason_other:
+            % if appeal_reason_other_type == "medical_necessity": 
+            Medical Necessity
+            % else:
+            ${ appeal_reason_other_text }
+            % endif
+          % endif
+      - "appeal_reason_explanation": ${ appeal_reason_explanation }
+      - "appeal_keep_benefits_request": ${ appeal_keep_benefits_request }
+      - "appeal_accept_change": ${ appeal_accept_change }
+      - "appeal_request_phr": ${ appeal_request_phr }
+      - "hearing_in_person": ${ hearing_in_person }
+      - "inperson_location": ${ "My preferred hearing location is " + inperson_location + ", MA" if hearing_in_person and inperson_location != "No location preference" else '' }
+      - "hearing_by_phone": ${ hearing_by_phone }
+      - "hearing_phone_number": ${ hearing_phone_number }
+      - "hearing_by_video": ${ hearing_by_video }
+      - "hearing_email": ${ hearing_email }
+      - "user_needs_interpreter": ${ user_needs_interpreter }
+      - "user_preferred_language": ${ user_preferred_language }
+      - "needs_assistive_device": ${ needs_assistive_device }
+             
+      - "assistive_device_type": |
+            % if assistive_device_type == "other":
+            ${ assistive_device_type_other }
+            % else: 
+            ${ assistive_device_type }
+            % endif
+      - "needs_other_accommodation": ${ needs_other_accommodation }
+      - "other_accommodation_type": ${ other_accommodation_type }
+      - "representative_name_full": ${ representative_name_full }
+      - "representative_phone_number": ${ representative_phone_number }
+      - "representative_address_address": ${ representative_address_address }
+      - "representative_address_city": ${ representative_address_city }
+      - "representative_address_state": ${ representative_address_state }
+      - "representative_address_zip": ${ representative_address_zip }
+      - "user_signature": |
+          % if al_person_answering == "user":
+          ${ users[0].signature }
+          % else:
+            % if user_guardian:
+            ${ filler.signature }
+            % else:
+            ${ users[0].signature }
+            % endif
+          % endif
+      - "signature_date": ${ signature_date }
+      - "user_name_full": |
+          % if al_person_answering == "user":
+          ${ users[0] }
+          % else:
+            % if user_guardian:
+            ${ filler }
+            % else:
+            ${ users[0] }
+            % endif
+          % endif
+---
