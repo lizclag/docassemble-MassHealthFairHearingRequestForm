@@ -146,8 +146,7 @@ code: |
     exhibit_attachment.exhibits.has_exhibits
     if exhibit_attachment.exhibits.has_exhibits:
         exhibit_attachment.exhibits.gather()
-  exhibit_attachment.exhibits.there_is_another = False
-  exhibit_attachment.exhibits.there_is_another = False
+  exhibit_attachment.exhibits.there_is_another == False
   set_progress(36)
   if is_eligibility_appeal == False:
     appeal_keep_benefits_request
